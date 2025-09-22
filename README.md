@@ -6,7 +6,6 @@ A modern, feature-rich Human Resource Management mobile application built with F
 ![Dart](https://img.shields.io/badge/Dart-3.x-green)
 ![Android](https://img.shields.io/badge/Android-API%2021%2B-green)
 ![iOS](https://img.shields.io/badge/iOS-12.0%2B-lightgrey)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## ✨ Features Overview
 
