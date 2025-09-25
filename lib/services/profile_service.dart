@@ -54,36 +54,3 @@ class ProfileService {
     }
   }
 }
-
-
-// import 'dart:convert';
-// import 'package:http/http.dart' as http;
-// import '../models/profile_model.dart';
-
-// class ProfileService {
-//   // Replace with your backend API URL!
-//   static const String apiBase = 'http://10.0.2.2:8000/employees/me';
-
-//   static Future<ProfileModel?> fetchProfile(String jwt) async {
-//   try {
-//     final res = await http.get(
-//       Uri.parse(apiBase),
-//       headers: { 'Authorization': 'Bearer $jwt' },
-//     );
-    
-//     print('Profile API Response: ${res.statusCode}');
-//     print('Response body: ${res.body}');
-    
-//     if (res.statusCode == 200) {
-//       return ProfileModel.fromJson(jsonDecode(res.body));
-//     } else if (res.statusCode == 401) {
-//       print('Unauthorized: Invalid or expired token');
-//     } else if (res.statusCode == 404) {
-//       print('Employee profile not found');
-//     }
-//   } catch (e) {
-//     print('Profile fetch error: $e');
-//   }
-//   return null;
-// }
-// }

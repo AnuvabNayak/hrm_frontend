@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../utils/datetime_utils.dart';
 
 num safeNum(dynamic x) => (x is num) ? x : 0;
 
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _serverWorkSec = 0;
   bool _counterRunning = false;
   bool _isActionLoading = false;
-  DateTime? _clockedAt;
+  // DateTime? _clockedAt;
   List<BreakInterval> breakIntervals = [];
   BreakInterval? currentBreak;
 
@@ -129,9 +130,9 @@ void _beginPolling() {
       final onBreak = sessionStatus == "break";
 
       final netWorkSec = safeNum(active?['elapsed_work_seconds']).toInt();
-      _clockedAt = active?['clock_in_time'] != null
-          ? DateTime.tryParse(active!['clock_in_time'])
-          : null;
+      // _clockedAt = active?['clock_in_time'] != null
+      //     ? DateTime.tryParse(active!['clock_in_time'])
+      //     : null;
       _serverWorkSec = netWorkSec;
       _displayedWorkSec = _serverWorkSec;
 
@@ -305,14 +306,149 @@ void _beginPolling() {
     return "$h:$m:$s";
   }
 
-  String _formatReadable(DateTime dt) {
-    final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
-    final ampm = dt.hour >= 12 ? "PM" : "AM";
-    final min = dt.minute.toString().padLeft(2, '0');
-    return "$hour:$min $ampm";
+  // String _formatReadable(DateTime dt) {
+  //   final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
+  //   final ampm = dt.hour >= 12 ? "PM" : "AM";
+  //   final min = dt.minute.toString().padLeft(2, '0');
+  //   return "$hour:$min $ampm";
+  // }
+
+  // String _getDayName(DateTime date) {
+  // const dayNames = [
+  //   'Mon', 'Tue', 'Wed', 'Thu', 
+  //   'Fri', 'Sat', 'Sun'
+  // ];
+  // return dayNames[date.weekday - 1];
+  // }
+
+
+  void _showClockOutConfirmation() {
+    final workHours = _displayedWorkSec / 3600; // Convert seconds to hours
+      
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.7), // Dark overlay for visibility
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 8,
+          title: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.orange.shade600,
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Early Clock Out",
+                style: GoogleFonts.nunito(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "You are clocking out before 8 hours!",
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  color: Colors.grey.shade700,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      color: Colors.orange.shade700,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Current work time: ${workHours.toStringAsFixed(1)} hours",
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange.shade800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              child: Text(
+                "No",
+                style: GoogleFonts.nunito(
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                performAction("clock-out");
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade600,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 2,
+              ),
+              child: Text(
+                "Yes, Clock Out",
+                style: GoogleFonts.nunito(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
+  //handler
+  void _handleClockOut() {
+    final workHours = _displayedWorkSec / 3600; // Convert seconds to hours
+    
+    if (workHours < 8.0) {
+      _showClockOutConfirmation();
+    } else {
+      performAction("clock-out");
+    }
   }
 
-  // Add this new method to build activity content
+  // build activity content
   Widget _buildActivityContent(String sessionStatus) {
     // Don't show completed work during active sessions or breaks
     if (sessionStatus != "ended") {
@@ -399,7 +535,7 @@ void _beginPolling() {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
+    // final now = DateTime.now();
     final sessionStatus = active?['status'] ?? "ended";
     final onBreak = sessionStatus == "break";
     final clockedIn = sessionStatus == "active" || sessionStatus == "break";
@@ -416,9 +552,9 @@ void _beginPolling() {
             const Icon(Icons.arrow_back, color: Colors.black),
             const SizedBox(width: 8),
             Text(
-              "${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2,'0')}-${now.year}",
+              DateTimeUtils.getCurrentISTDateWithDay(),
               style: GoogleFonts.nunito(
-                  color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         ),
         actions: [
@@ -480,7 +616,7 @@ void _beginPolling() {
                   }
                 ),
                 Text(
-                  'Clocked at ${_clockedAt != null ? _formatReadable(_clockedAt!) : "--"}',
+                  'Clocked at ${active?['clock_in_time'] != null ? DateTimeUtils.formatISTTime12(active!['clock_in_time']) : "--:--"}',
                   style: GoogleFonts.nunito(fontSize: 17, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 24),
@@ -497,12 +633,8 @@ void _beginPolling() {
                             ? _BigActionButton(
                                 label: "Clock Out",
                                 color: Colors.grey[700]!,
-                                onPressed: (onBreak || _isActionLoading)
-                                  ? null
-                                  : () {
-                                      performAction("clock-out");
-                                    },
-                                rightText: now.toString().substring(11,16),
+                                onPressed: (onBreak || _isActionLoading) ? null : _handleClockOut,
+                                rightText: DateTimeUtils.getCurrentISTTime12(),
                               )
                             : _BigActionButton(
                                 label: "Clock In",
@@ -514,7 +646,7 @@ void _beginPolling() {
                                       currentBreak = null;
                                       performAction("clock-in");
                                     },
-                                rightText: TimeOfDay.now().format(context),
+                                rightText: DateTimeUtils.getCurrentISTTime12(),
                               ),
                         ),
                       ),

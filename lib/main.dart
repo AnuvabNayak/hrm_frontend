@@ -12,6 +12,7 @@ import 'screens/menu_screen.dart';
 import 'screens/leave_process_screen.dart';
 
 final GoRouter _router = GoRouter(
+  // initialLocation: '/login',
   routes: [
     GoRoute(
       path: '/',
@@ -79,6 +80,12 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Nunito', // use your Google Font as in Figma
       ),
       debugShowCheckedModeBanner: false,
+      // routes: {
+      //   '/login': (context) => LoginScreen(),
+      //   '/home': (context) => HomeScreen(),
+      //   '/profile': (context) => ProfileScreen(),
+      //   // other routes...
+      // },
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../utils/datetime_utils.dart';
 
 class TimesheetScreen extends StatefulWidget {
   const TimesheetScreen({Key? key}) : super(key: key);
@@ -112,19 +113,28 @@ class _TimesheetScreenState extends State<TimesheetScreen> {
     final breakMinutesRem = (breakSec % 3600) ~/ 60;
     
     // Use actual clock in/out times from API
-    final clockInTime = dayData['first_clock_in'] != null 
-        ? _formatTimeFromString(dayData['first_clock_in'])
-        : "9:00 AM";
+    final clockInTime = DateTimeUtils.formatISTTime12(dayData['first_clock_in']);
+    final clockOutTime = DateTimeUtils.formatISTTime12(dayData['last_clock_out']);
+
+    // final clockInTime = dayData['first_clock_in'] != null 
+    //     ? _formatTimeFromString(dayData['first_clock_in'])
+    //     : "9:00 AM";
     
-    final clockOutTime = dayData['last_clock_out'] != null 
-        ? _formatTimeFromString(dayData['last_clock_out'])
-        : "-";
+    // final clockOutTime = dayData['last_clock_out'] != null 
+    //     ? _formatTimeFromString(dayData['last_clock_out'])
+    //     : "-";
     
     processed.add({
       "id": i,
-      "date": _formatDate(dayDate),
+      // "date": _formatDate(dayDate),
+      "date": DateTimeUtils.formatISTDate(dayData['first_clock_in']),
       "full_date": "${dayDate.year}-${dayDate.month.toString().padLeft(2, '0')}-${dayDate.day.toString().padLeft(2, '0')}",
-      "day_name": _getDayName(dayDate.weekday),
+      // "day_name": _getDayName(dayDate.weekday),
+      "day_name": DateTimeUtils.parseISTDateTime(dayData['first_clock_in'])?.weekday != null 
+        ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][
+            DateTimeUtils.parseISTDateTime(dayData['first_clock_in'])!.weekday - 1
+          ] 
+        : "Unknown",
       "clock_in_time": clockInTime,
       "clock_out_time": clockOutTime,
       "work_duration": "${workHours}h ${workMinutes}m",
@@ -138,20 +148,25 @@ class _TimesheetScreenState extends State<TimesheetScreen> {
   return processed.reversed.toList();
 }
 
+
 // Add this helper function to format time strings
 String _formatTimeFromString(String? dateTimeString) {
-  if (dateTimeString == null) return "-";
-  
-  try {
-    final dateTime = DateTime.parse(dateTimeString);
-    final hour = dateTime.hour > 12 ? dateTime.hour - 12 : (dateTime.hour == 0 ? 12 : dateTime.hour);
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    final ampm = dateTime.hour >= 12 ? 'PM' : 'AM';
-    return "$hour:$minute $ampm";
-  } catch (e) {
-    return "-";
-  }
+  return DateTimeUtils.formatISTTime12(dateTimeString);
 }
+
+// String _formatTimeFromString(String? dateTimeString) {
+//   if (dateTimeString == null) return "-";
+  
+//   try {
+//     final dateTime = DateTime.parse(dateTimeString);
+//     final hour = dateTime.hour > 12 ? dateTime.hour - 12 : (dateTime.hour == 0 ? 12 : dateTime.hour);
+//     final minute = dateTime.minute.toString().padLeft(2, '0');
+//     final ampm = dateTime.hour >= 12 ? 'PM' : 'AM';
+//     return "$hour:$minute $ampm";
+//   } catch (e) {
+//     return "-";
+//   }
+// }
   // List<Map<String, dynamic>> _processRecentData(List<dynamic> rawData) {
   //   List<Map<String, dynamic>> processed = [];
     
@@ -203,15 +218,15 @@ String _formatTimeFromString(String? dateTimeString) {
   //   return processed.reversed.toList();
   // }
 
-  String _formatDate(DateTime date) {
-    final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return "${days[date.weekday - 1]}, ${date.day.toString().padLeft(2, '0')}";
-  }
+  // String _formatDate(DateTime date) {
+  //   final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  //   return "${days[date.weekday - 1]}, ${date.day.toString().padLeft(2, '0')}";
+  // }
 
-  String _getDayName(int weekday) {
-    final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return days[weekday - 1];
-  }
+  // String _getDayName(int weekday) {
+  //   final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  //   return days[weekday - 1];
+  // }
 
   // String _formatTime(DateTime time) {
   //   final hour = time.hour > 12 ? time.hour - 12 : (time.hour == 0 ? 12 : time.hour);

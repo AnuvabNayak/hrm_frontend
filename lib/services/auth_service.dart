@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   static const _storage = FlutterSecureStorage();
@@ -43,6 +44,12 @@ class AuthService {
     return await _storage.read(key: "jwt");
   }
   static Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
     await _storage.delete(key: "jwt");
+    // await _storage.delete(key: "jwt");
+    // await prefs.remove('access_token');
+    // await prefs.remove('access_token');
+    await prefs.remove('access_token');
+    await prefs.remove('user_role');
   }
 }
