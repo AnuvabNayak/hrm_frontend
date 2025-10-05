@@ -1,18 +1,22 @@
-// lib/widgets/bottom_nav_bar.dart
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class MyBottomNavBar extends StatelessWidget {
   final int currentIndex;
-  const MyBottomNavBar({required this.currentIndex, Key? key}) : super(key: key);
+  final int unreadCount; // ✅ ADD for notification badge
+
+  const MyBottomNavBar({
+    required this.currentIndex, 
+    this.unreadCount = 0, // ✅ ADD
+    Key? key
+  }) : super(key: key);
 
   static const List<String> routes = [
     '/home',
-    '/inbox',   // Add Inbox screen and route if/when you implement it
+    '/posts', // ✅ CHANGED from '/inbox'
     '/timesheet',
     '/profile',
-    '/menu',    // Add Menu screen and route if/when you implement it
+    '/menu',
   ];
 
   @override
@@ -24,15 +28,46 @@ class MyBottomNavBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       onTap: (index) {
         if (index == currentIndex) return;
-        // Use GoRouter navigation, NOT Navigator!
         context.go(routes[index]);
       },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "HOME"),
-        BottomNavigationBarItem(icon: Icon(Icons.mail), label: "INBOX"),
-        BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "TIMESHEET"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "PROFILE"),
-        BottomNavigationBarItem(icon: Icon(Icons.menu), label: "MENU"),
+      items: [
+        const BottomNavigationBarItem(icon: Icon(Icons.home), label: "HOME"),
+        BottomNavigationBarItem(
+          icon: Stack(
+            children: [
+              const Icon(Icons.campaign), // ✅ CHANGED icon
+              if (unreadCount > 0) // ✅ ADD notification badge
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 12,
+                      minHeight: 12,
+                    ),
+                    child: Text(
+                      unreadCount > 99 ? '99+' : unreadCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          label: "POSTS", // ✅ CHANGED label
+        ),
+        const BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "TIMESHEET"),
+        const BottomNavigationBarItem(icon: Icon(Icons.person), label: "PROFILE"),
+        const BottomNavigationBarItem(icon: Icon(Icons.menu), label: "MENU"),
       ],
     );
   }

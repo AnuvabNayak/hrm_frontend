@@ -40,7 +40,7 @@ class MenuScreen extends StatelessWidget {
             icon: Icons.schedule,
             title: "Time Off /Leave",
             subtitle: "Leave requests & balance",
-            onTap: () => context.go('/leave-process'),
+            onTap: () => context.go('/leaves'),
           ),
           const SizedBox(height: 16),
           _MenuTile(

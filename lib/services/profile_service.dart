@@ -30,6 +30,46 @@ class ProfileService {
     return null;
   }
 
+
+  // Update employee profile (name and phone)
+  static Future<ProfileModel?> updateProfile(String jwt, {
+    String? name,
+    String? phone,
+  }) async {
+    try {
+      final body = <String, dynamic>{};
+      if (name != null && name.trim().isNotEmpty) {
+        body['name'] = name.trim();
+      }
+      if (phone != null && phone.trim().isNotEmpty) {
+        body['phone'] = phone.trim();
+      }
+
+      final res = await http.put(
+        Uri.parse('${apiBase}/update-profile'),
+        headers: {
+          'Authorization': 'Bearer $jwt',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      print('Profile update response: ${res.statusCode}');
+      print('Response body: ${res.body}');
+
+      if (res.statusCode == 200) {
+        return ProfileModel.fromJson(jsonDecode(res.body));
+      } else if (res.statusCode == 401) {
+        print('Unauthorized: Invalid or expired token');
+      } else {
+        print('Update failed: ${res.statusCode}');
+      }
+    } catch (e) {
+      print('Profile update error: $e');
+    }
+    return null;
+  }
+
   // --- PATCH: Added upload method ---
   static Future<bool> uploadProfilePicture(String jwt, String base64Image) async {
     try {

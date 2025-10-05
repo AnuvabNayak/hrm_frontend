@@ -6,6 +6,8 @@ import '../widgets/bottom_nav_bar.dart';
 import '../services/auth_service.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'edit_profile_screen.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = '/profile';
@@ -148,8 +150,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 140,
             height: 48,
             child: ElevatedButton(
-              onPressed: () {
-                // TODO: Push to edit profile screen or open edit modal
+              onPressed: () async {
+                if (profile != null) {
+                  final updatedProfile = await Navigator.push<ProfileModel>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditProfileScreen(profile: profile!),
+                    ),
+                  );
+                  
+                  // If profile was updated, refresh the current screen
+                  if (updatedProfile != null) {
+                    setState(() {
+                      profile = updatedProfile;
+                    });
+                  }
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

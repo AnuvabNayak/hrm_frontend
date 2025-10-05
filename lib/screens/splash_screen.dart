@@ -42,9 +42,16 @@ class SplashScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                _SplashButton(label: 'Admin', onTap: () => context.go('/login?role=admin')),
+                // The section has been updated with patch.
+                _SplashButton(
+                  label: 'Admin',
+                  onTap: () => context.go('/login?role=admin')
+                ),
                 const SizedBox(height: 16),
-                _SplashButton(label: 'Employee', onTap: () => context.go('/login?role=employee')),
+                _SplashButton(
+                  label: 'Employee',
+                  onTap: () => context.go('/login?role=employee')
+                ),
               ],
             ),
           ),
@@ -74,7 +81,7 @@ class _SplashButtonState extends State<_SplashButton> {
       onTapCancel: () => setState(() => _scale = 1.0),
       child: AnimatedScale(
         scale: _scale,
-        duration: Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 100),
         child: Container(
           width: 220,
           height: 50,
@@ -86,7 +93,7 @@ class _SplashButtonState extends State<_SplashButton> {
               BoxShadow(
                 color: Colors.blue.withOpacity(0.09),
                 blurRadius: 10,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               )
             ]
           ),
@@ -97,82 +104,3 @@ class _SplashButtonState extends State<_SplashButton> {
     );
   }
 }
-
-
-
-// import 'package:flutter/material.dart';
-// import 'package:go_router/go_router.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// // If you have SVGs/background watermark:
-// import 'package:flutter_svg/flutter_svg.dart';
-
-// class SplashScreen extends StatelessWidget {
-//   const SplashScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: 
-//       Stack(
-//         children: [
-//           Positioned.fill(
-//             child: Opacity(
-//               opacity: 0.07,
-//               child: Image.asset('assets\background_user_selection.png', fit: BoxFit.cover),
-//               ),
-//               ),
-//       Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             // TODO: Replace with your asset image for the logo
-//             Image.asset(
-//               'assets/logo.png',
-//               width: 100,
-//               height: 100,
-//               fit: BoxFit.contain,
-//             ),
-//             const SizedBox(height: 40),
-//             Text(
-//               'ZYTEXA',
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold,
-//                 fontSize: 32,
-//                 color: Colors.blue[800],
-//                 letterSpacing: 2,
-//               ),
-//             ),
-//             const SizedBox(height: 24),
-            
-//             ElevatedButton(
-//               style: ElevatedButton.styleFrom(
-//                 minimumSize: Size(200, 50),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(8),
-//                 ),
-//               ),
-//               onPressed: () => context.go('/login?role=admin'),
-//               child: Text('Admin',
-//                 style: TextStyle(fontSize: 18),
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             ElevatedButton(
-//               style: ElevatedButton.styleFrom(
-//                 minimumSize: Size(200, 50),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(8),
-//                 ),
-//               ),
-//               onPressed: () => context.go('/login?role=employee'),
-//               child: Text('Employee',
-//                 style: TextStyle(fontSize: 18),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -159,4 +159,37 @@ class DateTimeUtils {
       "is_today": isToday(dateStr).toString(),
     };
   }
+  static String formatISTDateFromDateTime(DateTime? dt) {
+    if (dt == null) return "--";
+    final d = dt.day.toString().padLeft(2, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final y = dt.year;
+    return "$d-$m-$y";
+  }
+
+  static String formatDisplayDate(DateTime? dt) {
+    if (dt == null) return "--";
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    final dn = days[dt.weekday - 1];
+    final mn = months[dt.month - 1];
+    return "$dn, ${dt.day} $mn";
+  }
+
+  static bool isSameDay(DateTime? a, DateTime? b) {
+    if (a == null || b == null) return false;
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  // Formats a backend date or datetime string into "DD-MM-YYYY, Wed"
+  static String formatISTDateWithDay(String? dateStr) {
+    final dt = parseISTDateTime(dateStr) ?? parseISTDate(dateStr);
+    if (dt == null) return "--";
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    final dn = days[dt.weekday - 1];
+    final d = dt.day.toString().padLeft(2, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final y = dt.year;
+    return "$d-$m-$y, $dn";
+  }
 }

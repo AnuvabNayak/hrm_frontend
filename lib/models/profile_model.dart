@@ -42,6 +42,21 @@ class ProfileModel {
   String get displayPhone => (phone != null && phone!.isNotEmpty) ? phone! : 'Not available';
   String get displayEmail => (email != null && email!.isNotEmpty) ? email! : 'Not available';
   String get displayEmpCode => (empCode != null && empCode!.isNotEmpty) ? empCode! : 'Not available';
+
+  // Convenient composite display name for UI
+  String get displayName {
+    final parts = <String>[];
+    if (empCode != null && empCode!.trim().isNotEmpty && empCode!.toLowerCase() != 'string') {
+      parts.add(empCode!.trim());
+    }
+    if (name != null && name!.trim().isNotEmpty && name!.toLowerCase() != 'string') {
+      parts.add(name!.trim());
+    } else if (username != null && username!.trim().isNotEmpty && username!.toLowerCase() != 'string') {
+      parts.add(username!.trim());
+    }
+    if (parts.isEmpty) return 'Employee';
+    return parts.join(' · ');
+  }
 }
 
 

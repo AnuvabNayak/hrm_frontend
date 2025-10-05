@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
+import '../services/role_service.dart';
 // import '../widgets/bottom_nav_bar.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -32,7 +33,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     setState(() => _isLoading = false);
     if (error == null) {
-      context.go('/home');
+      // This section has been updated with your patch.
+      final role = await RoleService.getCurrentRole();
+      if (!mounted) return;
+
+      if (role == 'admin' || role == 'super_admin') {
+        context.go('/admin/home');
+      } else {
+        context.go('/home');
+      }
     } else {
       setState(() => _errorMsg = error);
     }
@@ -45,7 +54,14 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("LOGIN - ${role[0].toUpperCase()}${role.substring(1)}", style: GoogleFonts.nunito()),
-        centerTitle: true, elevation: 0, backgroundColor: Colors.white, foregroundColor: Colors.black,
+        centerTitle: true, 
+        elevation: 0, 
+        backgroundColor: Colors.white, 
+        foregroundColor: Colors.black,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => context.go('/'),
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -105,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // ),
                     AnimatedOpacity(
                       opacity: _errorMsg != null ? 1.0 : 0.0,
-                      duration: Duration(milliseconds: 250),
+                      duration: const Duration(milliseconds: 250),
                       child: Padding(
                         padding: const EdgeInsets.only(top: 11),
                         child: Text(_errorMsg ?? "", style: TextStyle(color: Colors.red[700])),
@@ -115,16 +131,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: _isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         backgroundColor: Colors.blueAccent
                       ),
                       child: AnimatedSwitcher(
-                        duration: Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 200),
                         child: _isLoading
-                          ? SizedBox(key: ValueKey('loading'), width: 22, height: 22,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.3))
-                          : Text('Login', key: ValueKey('btn'), style: GoogleFonts.nunito(fontSize: 18, color: Colors.white)),
+                        ? const SizedBox(key: ValueKey('loading'), width: 22, height: 22,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.3))
+                        : Text('Login', key: const ValueKey('btn'), style: GoogleFonts.nunito(fontSize: 18, color: Colors.white)),
                       ),
                     ),
                   ],
